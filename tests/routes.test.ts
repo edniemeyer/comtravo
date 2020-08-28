@@ -20,29 +20,26 @@ describe('GET /', () => {
         server && server.close(done);
     });
 
-    it('should return statusCode 200 and merged flights', async () => {
-        const response = await agent.get('/');
-        expect(response.status).toBe(200);
-        expect(response.body);
-
-    })
-
     it('should return statusCode 503 if timeout', async () => {
-
-        app.get("/timeout", async (req, res) => {
-            await new Promise((resolve, reject) => {
-                setTimeout(resolve, 1500)
-                if (req.timedout) return reject;
-            });
-        });
-        const response = await agent.get('/timeout');
+        const response = await agent.get('/');
         expect(response.status).toBe(503);
         expect(response.body);
     })
+
+    it('should return statusCode 200 and merged flights', async () => {
+        const response = await agent.get('/');
+        expect(response.status).toBe(200);
+        const cachedResponse = await agent.get('/');
+        expect(cachedResponse.status).toBe(200);
+        expect(cachedResponse.body);
+
+    })
+
+    
 })
 
 describe('FLIGHTS API GET /source1', () => {
-    it('should return statusCode 200 and source1 flights', async () => {
+    it('should return statusCode 200 and source1 flights', () => {
         request(API_URL)
             .get('/source1')
             .expect(200)
@@ -53,7 +50,7 @@ describe('FLIGHTS API GET /source1', () => {
 })
 
 describe('FLIGHTS API GET /source2', () => {
-    it('should return statusCode 200 and source2 flights', async () => {
+    it('should return statusCode 200 and source2 flights', () => {
         request(API_URL)
             .get('/source2')
             .expect(200)
